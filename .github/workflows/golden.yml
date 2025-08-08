@@ -2,32 +2,24 @@ name: Golden Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   golden:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Install dependencies
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run preflight check
-        run: |
-          python tools/preflight_check.py
-
-      - name: Run golden tests
-        run: |
-          python tests/golden/run_golden_tests.py --deterministic
+      - name: Preflight
+        run: python tools/preflight_check.py
+      - name: Golden (deterministic)
+        env:
+          KAI_DETERMINISTIC: "1"
+        run: python tests/golden/run_golden_tests.py --deterministic
