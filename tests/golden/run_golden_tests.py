@@ -23,6 +23,9 @@ os.makedirs(SNAP_DIR, exist_ok=True)
 os.makedirs(REPORT_DIR, exist_ok=True)
 
 
+# -----------------------
+# 유틸
+# -----------------------
 def _load_text(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
         return f.read().strip()
@@ -40,6 +43,35 @@ def _load_json(path: str):
 
 def _hash(obj) -> str:
     payload = json.dumps(obj, ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _normalize_strategy(obj: dict) -> dict:
+    """
+    스냅샷 비교 전에 비결정 필드(meta.timestamp 등)를 고정/제거해서 해시 드리프트 방지.
+    필요 시 여기에 정규화 규칙을 추가.
+    """
+    if not isinstance(obj, dict):
+        return obj
+    out = json.loads(json.dumps(obj, ensure_ascii=False))  # deepcopy
+
+    meta = out.get("meta")
+    if isinstance(meta, dict):
+        # 테스트 중에는 timestamp가 바뀌지 않도록 고정
+        meta["timestamp"] = "<fixed-ts>"
+        # 모델명을 고정하고 싶다면:
+        # meta["model"] = "<fixed-model>"
+
+    # 리스트 구조가 set/순서불안정할 수 있으면 여기서 정렬하거나 정형화 가능
+    # out["objectives"] = sorted(out["objectives"])  # 필요시
+    # out["flow"] = sorted(out["flow"])              # 필요시
+
+    return out
+
+
+def _hash_norm(obj) -> str:
+    norm = _normalize_strategy(obj)
+    payload = json.dumps(norm, ensure_ascii=False, sort_keys=True)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -68,13 +100,22 @@ def _ensure_sample_inputs():
     return sorted(samples.keys())
 
 
+# -----------------------
+# 메인
+# -----------------------
 def main():
     parser = argparse.ArgumentParser(description="Golden tests runner")
     parser.add_argument("--update-baseline", action="store_true",
                         help="현재 결과를 스냅샷으로 덮어쓰기(의도된 변경 반영)")
     parser.add_argument("--case", type=str, default=None,
                         help="특정 케이스만 실행 (예: case3)")
+    parser.add_argument("--deterministic", action="store_true",
+                        help="결정 모드로 실행(KAI_DETERMINISTIC=1)")
     args = parser.parse_args()
+
+    # 결정 모드: 엔진이 timestamp/seed를 고정하도록 환경변수 설정
+    if args.deterministic:
+        os.environ["KAI_DETERMINISTIC"] = "1"
 
     cases = _ensure_sample_inputs()
     if args.case:
@@ -106,12 +147,12 @@ def main():
             summary.append({"case": case_name, "status": "baseline_created"})
             continue
 
-        # 비교
+        # 비교 (strategy는 정규화 후 해시 비교)
         base_strategy = _load_json(snap_s)
         base_evaluation = _load_json(snap_e)
 
         changed = []
-        if _hash(strategy) != _hash(base_strategy):
+        if _hash_norm(strategy) != _hash_norm(base_strategy):
             changed.append("strategy.json")
         if _hash(evaluation) != _hash(base_evaluation):
             changed.append("evaluation.json")

@@ -1,37 +1,6 @@
 [
   {
-    "case": "case1",
-    "status": "changed",
-    "files": [
-      "strategy.json"
-    ]
-  },
-  {
-    "case": "case2",
-    "status": "changed",
-    "files": [
-      "strategy.json"
-    ]
-  },
-  {
     "case": "case3",
-    "status": "changed",
-    "files": [
-      "strategy.json"
-    ]
-  },
-  {
-    "case": "case4",
-    "status": "changed",
-    "files": [
-      "strategy.json"
-    ]
-  },
-  {
-    "case": "case5",
-    "status": "changed",
-    "files": [
-      "strategy.json"
-    ]
+    "status": "unchanged"
   }
 ]
