@@ -1,0 +1,14 @@
+{
+  "score": 100.0,
+  "findings": [
+    "title_len:56",
+    "objectives:4",
+    "modules:3",
+    "roles:3",
+    "flow_tokens:61",
+    "risks:4"
+  ],
+  "recommendations": [
+    "세부 KPI와 RACI, 일정·리소스 가정치를 보강하면 더 높게 평가됩니다."
+  ]
+}

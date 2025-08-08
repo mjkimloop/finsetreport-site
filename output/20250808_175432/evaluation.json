@@ -1,0 +1,11 @@
+{
+  "score": 100.0,
+  "findings": [
+    "modules:3",
+    "objectives:3"
+  ],
+  "recommendations": [
+    "리스크 정의 보강",
+    "유저 여정 명확화"
+  ]
+}

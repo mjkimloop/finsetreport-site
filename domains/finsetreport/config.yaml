@@ -1,0 +1,27 @@
+domain_name: finsetreport
+goal: "대출 상담 플랫폼 전략 설계"
+
+constraints:
+  region: "KR"
+  privacy: "PII 최소수집, 동의 우선"
+  stack_pref: "Python + FastAPI"
+
+examples:
+  - input: "핀셋리포트 가입 온보딩을 최적화해줘"
+    output: "가입 흐름 단순화, 인증 단계 축소, 이탈 구간 ABTest"
+
+kpis:
+  - "회원가입 전환율(%)"
+  - "Onboarding 완료율(%)"
+  - "첫 주 리텐션(%)"
+
+flow_patterns:
+  - "InputAnalyzer -> FunnelDesigner -> RiskAssessor -> KPIPlanner"
+
+risks:
+  - "개인정보 규제 변화"
+  - "데이터 품질 저하"
+
+mitigations:
+  - "동의 관리 버전관리+로깅"
+  - "ETL 검증 룰 및 백업 파이프라인"

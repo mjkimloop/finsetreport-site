@@ -1,0 +1,37 @@
+{
+  "title": "[finsetreport] 전략: 대출 상담 플랫폼 전략 설계 / 핀셋리포트 가입 온보딩을 최적화해줘",
+  "objectives": [
+    "문제정의 명확화",
+    "도메인 목표 반영: 대출 상담 플랫폼 전략 설계",
+    "사고 프레임 적용: 전략적 사고 / 목표 중심 판단",
+    "KPI 설정: 회원가입 전환율(%), Onboarding 완료율(%), 첫 주 리텐션(%)"
+  ],
+  "modules": [
+    {
+      "name": "InputAnalyzer",
+      "role": "분류"
+    },
+    {
+      "name": "FunnelDesigner",
+      "role": "전략"
+    },
+    {
+      "name": "RiskAssessor",
+      "role": "평가"
+    }
+  ],
+  "flow": [
+    "InputAnalyzer -> FunnelDesigner -> RiskAssessor -> KPIPlanner"
+  ],
+  "risks": [
+    "요구사항 변동",
+    "데이터 부족",
+    "(대응)동의 관리 버전관리+로깅",
+    "(대응)ETL 검증 룰 및 백업 파이프라인"
+  ],
+  "meta": {
+    "version": "0.3.0",
+    "model": "router_dummy",
+    "timestamp": "2025-08-08T10:01:37.357859"
+  }
+}

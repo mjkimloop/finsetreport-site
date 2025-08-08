@@ -1,0 +1,17 @@
+{
+  "score": 76.0,
+  "findings": [
+    "title_len:60",
+    "objectives:3",
+    "modules:3",
+    "roles:3",
+    "flow_tokens:47",
+    "risks:2",
+    "penalty:KPI 미기재:15",
+    "penalty:리스크 대응전략 미기재:10"
+  ],
+  "recommendations": [
+    "목표(Objectives)에 정량 KPI(예: 전환율 %, DAU, 리텐션)를 1개 이상 포함하세요.",
+    "각 리스크에 대한 대응책(완화/우회/백업)을 1줄 이상 기술하세요."
+  ]
+}
