@@ -1,17 +1,5 @@
-﻿# Python
+﻿output/
+dist/
 .venv/
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-
-# Project artifacts
-output/
-dist/
-*.log
-
-# OS / Editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
+*.pyc
