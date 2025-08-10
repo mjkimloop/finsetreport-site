@@ -1,0 +1,14 @@
+{
+  "score": 77.9,
+  "findings": [
+    "structure=80.0",
+    "coverage=75",
+    "feasibility=80.0",
+    "risk=70",
+    "clarity=86.7",
+    "weights={'structure': 0.25, 'coverage': 0.25, 'feasibility': 0.25, 'risk': 0.15, 'clarity': 0.1}"
+  ],
+  "recommendations": [
+    "핵심 모듈 수를 4~8개로 늘려 실행 단계를 구체화하세요."
+  ]
+}

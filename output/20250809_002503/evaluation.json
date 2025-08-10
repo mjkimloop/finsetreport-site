@@ -1,0 +1,17 @@
+{
+  "score": 88.0,
+  "findings": [
+    "title_len:32",
+    "objectives:5",
+    "modules:4",
+    "roles:4",
+    "flow_tokens:59",
+    "risks:3",
+    "penalty:모듈 의존관계/흐름 불충분:10",
+    "penalty:리스크 대응전략 미기재:10"
+  ],
+  "recommendations": [
+    "modules에 deps/depends를 명시하거나 flow에 3개 이상 노드 흐름을 작성하세요.",
+    "각 리스크에 대한 대응책(완화/우회/백업)을 1줄 이상 기술하세요."
+  ]
+}

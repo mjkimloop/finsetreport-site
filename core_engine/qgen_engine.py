@@ -1,166 +1,130 @@
+# core_engine/qgen_engine.py  (전체 교체본)
+
+from __future__ import annotations
+
+import os
 from datetime import datetime
-import os, yaml, json
-from typing import Dict, Any
+from typing import Dict, Any, List
 
-from schemas.strategy import StructuredStrategy
-from core_engine.guardian_parser import guard_cast
-from core_engine.model_router import router
-from core_engine.trace_logger import log_trace
-from prompts.autoprompt import build_prompt_bundle
+import yaml
 
-PROMPT_PATH = os.path.join("prompts", "qgen_system.txt")
-
-# LLM 없이도 동작하도록 기본 False
-# 실제 연결 시 True로 바꾸고 model_router.call() 바인딩
-USE_LLM: bool = False
-
-# QGEN 단계 부분 재시도 횟수(실패 시 보정/재시도)
-RETRY_MAX: int = 2
+from schemas.strategy import StrategyRequest, StructuredStrategy, ModuleMeta
 
 
-def _load_prompt_text() -> str:
-    if os.path.exists(PROMPT_PATH):
-        with open(PROMPT_PATH, "r", encoding="utf-8") as f:
-            return f.read().strip()
-    return "SYSTEM: 전략 구조를 JSON 스키마(StructuredStrategy)에 맞게 생성하라."
+# ------------------------------------------------------------
+# 내부 유틸
+# ------------------------------------------------------------
+def _load_domain_config(domain: str) -> Dict[str, Any]:
+    path = os.path.join("domains", domain, "config.yaml")
+    if not os.path.exists(path):
+        # 최소 기본값
+        return {
+            "domain_name": domain,
+            "constraints": {"language": "ko-KR", "max_objectives": "7", "max_modules": "12"},
+            "kpis": [],
+            "flow_patterns": ["Discovery", "Design", "Delivery"],
+            "risks": ["데이터 부족", "리소스 병목"],
+        }
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
 
 
-def _load_domain_cfg(domain: str) -> dict:
-    cfg_path = os.path.join("domains", domain, "config.yaml")
-    if os.path.exists(cfg_path):
-        with open(cfg_path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f) or {}
+def _normalize_constraints(d: Dict[str, Any] | None) -> Dict[str, str]:
+    if not d:
+        return {}
+    out: Dict[str, str] = {}
+    for k, v in d.items():
+        # 모두 문자열화 (Pydantic 스키마와의 계약 유지)
+        out[str(k)] = v if isinstance(v, str) else str(v)
+    # 기본값 보강
+    out.setdefault("language", "ko-KR")
+    out.setdefault("max_objectives", "7")
+    out.setdefault("max_modules", "12")
+    return out
+
+
+def _as_dict(obj: Any) -> Dict[str, Any]:
+    if hasattr(obj, "model_dump"):
+        return obj.model_dump()
+    if hasattr(obj, "dict"):
+        return obj.dict()
+    if isinstance(obj, dict):
+        return obj
     return {}
 
 
-def _fallback_strategy(request, combo, domain_cfg) -> Dict[str, Any]:
-    """LLM을 사용하지 않을 때의 결정적 더미 전략(도메인 설정/사고조합 반영)"""
-    goal = (domain_cfg.get("goal") or "").strip()
-    title = f"[{request.domain}] 전략: {request.user_input[:60]}"
-    if goal:
-        title = f"[{request.domain}] 전략: {goal} / {request.user_input[:40]}"
+# ------------------------------------------------------------
+# 공개 API
+# ------------------------------------------------------------
+def generate_strategy(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    StrategyRequest -> StructuredStrategy 템플릿 생성 (MVP 고정 템플릿)
+    """
+    domain = payload.get("domain") or ""
+    user_input = payload.get("user_input") or ""
+    constraints = _normalize_constraints(payload.get("constraints"))
 
-    raw = {
-        "title": title,
-        "objectives": [
-            "문제정의 명확화",
-            f"도메인 목표 반영: {goal or '기본 목표'}",
-            f"사고 프레임 적용: {combo.get('strategy_frame')} / {combo.get('judgment')}",
-        ],
-        "modules": [
-            {"name": "InputAnalyzer", "role": "분류"},
-            {"name": "FunnelDesigner", "role": "전략"},
-            {"name": "RiskAssessor", "role": "평가"},
-        ],
-        "flow": ["InputAnalyzer -> FunnelDesigner -> RiskAssessor"],
-        "risks": ["요구사항 변동", "데이터 부족"],
-        "meta": {
-            "version": "0.3.0",
-            "model": "router_dummy",
-            "timestamp": datetime.utcnow().isoformat(),
-        },
-    }
-
-    # === 도메인 config의 kpis / flow_patterns / mitigations 반영 ===
-    kpis = domain_cfg.get("kpis") or []
-    if kpis:
-        raw["objectives"].append(f"KPI 설정: {', '.join(kpis[:3])}")
-
-    flow_patterns = domain_cfg.get("flow_patterns") or []
-    if flow_patterns:
-        raw["flow"] = flow_patterns  # 기존 flow 대체 (의존관계 가점 목적)
-
-    mitigs = domain_cfg.get("mitigations") or []
-    if mitigs:
-        if not raw.get("risks"):
-            raw["risks"] = ["운영 리스크 정의 필요"]
-        raw["risks"] += [f"(대응){m}" for m in mitigs]
-
-    return raw
-
-
-def _call_llm(prompt_bundle) -> Any:
-    """실제 API 연결 시 model_router.call() 사용. 현 단계는 더미 응답."""
-    payload = {
-        "system": prompt_bundle.system,
-        "user": prompt_bundle.user,
-        "examples": prompt_bundle.examples,
-    }
-    log_trace(stage="qgen_prompt", payload=payload)
-
-    # ↓↓↓ 실제 바인딩 시:
-    # resp = router.call(model="gpt4o", prompt=payload, max_tokens=1800)
-    # return resp["content"]  # 문자열(JSON) 기대
-
-    # 더미 응답(JSON 문자열)
-    return json.dumps({
-        "title": f"[AI] {prompt_bundle.user[:60]}",
-        "objectives": ["문제정의", "솔루션설계", "실행계획"],
-        "modules": [
-            {"name": "Analyzer", "role": "분석"},
-            {"name": "Designer", "role": "설계"},
-            {"name": "Assessor", "role": "평가"},
-        ],
-        "flow": ["Analyzer -> Designer -> Assessor"],
-        "risks": ["리스크 미정의"],
-        "meta": {
-            "version": "0.3.0",
-            "model": "router_dummy",
-            "timestamp": datetime.utcnow().isoformat()
-        }
-    }, ensure_ascii=False)
-
-
-def generate_strategy(request, combo) -> dict:
-    """오토프롬프트 → (LLM or Fallback) → Guardian 검증 → 부분 재시도"""
-    system_prompt = _load_prompt_text()
-    domain_cfg = _load_domain_cfg(request.domain)
-
-    bundle = build_prompt_bundle(
-        system_text=system_prompt,
-        domain_cfg=domain_cfg,
-        user_text=request.user_input,
-        thinking_combo=combo,
+    # 요청 스키마 검증
+    _ = StrategyRequest.model_validate(
+        {"domain": domain, "user_input": user_input, "constraints": constraints}
     )
 
-    attempt = 0
-    last_raw = None
+    title = f"[{domain}] 전략: {user_input}".strip()
 
-    while attempt <= RETRY_MAX:
-        attempt += 1
+    # 간단 템플릿
+    objectives: List[str] = ["핵심 목표 정의", "핵심 KPI 선정", "실행 로드맵 수립"]
+    modules: List[Dict[str, str]] = [
+        {"name": "Discovery", "role": "문제/사용자 조사", "deps": ""},
+        {"name": "Design", "role": "퍼널/프로세스 설계", "deps": "Discovery"},
+        {"name": "Delivery", "role": "실행/출시/관측", "deps": "Design"},
+    ]
+    flow = [m["name"] for m in modules]
 
-        if USE_LLM:
-            raw = _call_llm(bundle)  # 문자열(JSON) 가정
-        else:
-            raw = _fallback_strategy(request, combo, domain_cfg)  # dict
+    meta = ModuleMeta(
+        version="1.0",
+        model="template",
+        timestamp=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+    )
 
-        ok, model = guard_cast(StructuredStrategy, raw)
-        if ok:
-            result = model.model_dump()
-            log_trace(stage=f"qgen_parsed_ok_try{attempt}", payload=result)
-            return result
+    strat = StructuredStrategy(
+        title=title,
+        objectives=objectives,
+        modules=modules,
+        flow=flow,
+        risks=["데이터 부족", "리소스 병목"],
+        meta=meta,
+    )
 
-        # 실패 시 Trace 남기고 재시도
-        log_trace(stage=f"qgen_parse_fail_try{attempt}", payload=str(model))
-        last_raw = raw
+    return _as_dict(strat)
 
-    # 모두 실패 → 마지막 raw 반환(파이프라인 유지)
-    if isinstance(last_raw, dict):
-        log_trace(stage="qgen_fallback_raw", payload=last_raw)
-        return last_raw
+
+def run_qgen_pipeline(domain: str, qmand_or_text: Dict[str, Any] | str) -> Dict[str, Any]:
+    """
+    - qmand_or_text 가 dict 이면: QMAND 출력으로 간주 (user_input, constraints 등 포함)
+    - qmand_or_text 가 str 이면: 그냥 사용자 입력 텍스트로 간주
+    도메인 config와 병합하여 Strategy 템플릿 생성
+    """
+    cfg = _load_domain_config(domain)
+
+    if isinstance(qmand_or_text, dict):
+        user_input = (
+            qmand_or_text.get("user_input")
+            or qmand_or_text.get("prompt")
+            or qmand_or_text.get("text")
+            or ""
+        )
+        qmand_constraints = qmand_or_text.get("constraints") or {}
     else:
-        # 문자열이었으면 최소 안전 dict로 감쌈
-        safe = {
-            "title": "[Fallback] 전략",
-            "objectives": [],
-            "modules": [],
-            "flow": [],
-            "risks": [],
-            "meta": {
-                "version": "0.0",
-                "model": "unknown",
-                "timestamp": datetime.utcnow().isoformat()
-            }
-        }
-        log_trace(stage="qgen_fallback_safe", payload=safe)
-        return safe
+        # 문자열 입력
+        user_input = str(qmand_or_text)
+        qmand_constraints = {}
+
+    base_constraints = (cfg.get("constraints") or {})
+    merged_constraints = _normalize_constraints({**base_constraints, **qmand_constraints})
+
+    payload = {
+        "domain": domain,
+        "user_input": user_input,
+        "constraints": merged_constraints,
+    }
+    return generate_strategy(payload)

@@ -1,0 +1,21 @@
+{
+  "score": 77.9,
+  "findings": [
+    "structure=80.0",
+    "coverage=75.0",
+    "feasibility=80.0",
+    "risk=70",
+    "clarity=86.7",
+    "weights={'structure': 0.24797863953987184, 'coverage': 0.25148233100409395, 'feasibility': 0.2493262131799573, 'risk': 0.14878718372392313, 'clarity': 0.10242563255215381}"
+  ],
+  "recommendations": [
+    "핵심 모듈 수를 4~8개로 늘려 실행 단계를 구체화하세요."
+  ],
+  "used_weights": {
+    "structure": 0.24797863953987184,
+    "coverage": 0.25148233100409395,
+    "feasibility": 0.2493262131799573,
+    "risk": 0.14878718372392313,
+    "clarity": 0.10242563255215381
+  }
+}

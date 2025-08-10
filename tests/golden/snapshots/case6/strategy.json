@@ -1,0 +1,39 @@
+{
+  "flow": [
+    "Delivery",
+    "Design",
+    "Discovery"
+  ],
+  "meta": {
+    "model": "template",
+    "timestamp": "<ts>",
+    "version": "1.0"
+  },
+  "modules": [
+    {
+      "deps": "Design",
+      "name": "Delivery",
+      "role": "실행/출시/관측"
+    },
+    {
+      "deps": "Discovery",
+      "name": "Design",
+      "role": "퍼널/프로세스 설계"
+    },
+    {
+      "deps": "",
+      "name": "Discovery",
+      "role": "문제/사용자 조사"
+    }
+  ],
+  "objectives": [
+    "실행 로드맵 수립",
+    "핵심 KPI 선정",
+    "핵심 목표 정의"
+  ],
+  "risks": [
+    "데이터 부족",
+    "리소스 병목"
+  ],
+  "title": "[finsetreport] 전략: ﻿가입 온보딩 최적화 전략"
+}

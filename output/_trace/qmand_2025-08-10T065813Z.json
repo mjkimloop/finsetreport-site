@@ -1,0 +1,15 @@
+{
+  "domain": "finsetreport",
+  "user_input": "가입 온보딩 최적화 전략",
+  "constraints": {
+    "language": "ko-KR",
+    "max_objectives": 7,
+    "max_modules": 12
+  },
+  "intent": "strategy",
+  "meta": {
+    "domain": "finsetreport",
+    "intent": "strategy",
+    "timestamp": "2025-08-10T06:58:13Z"
+  }
+}

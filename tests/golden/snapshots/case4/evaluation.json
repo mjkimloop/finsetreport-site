@@ -1,14 +1,14 @@
 {
-  "score": 100.0,
   "findings": [
-    "title_len:69",
-    "objectives:4",
-    "modules:3",
-    "roles:3",
-    "flow_tokens:61",
-    "risks:4"
+    "clarity=86.7",
+    "coverage=75.0",
+    "feasibility=80.0",
+    "risk=70",
+    "structure=80.0",
+    "weights=<omitted>"
   ],
   "recommendations": [
-    "세부 KPI와 RACI, 일정·리소스 가정치를 보강하면 더 높게 평가됩니다."
-  ]
+    "핵심 모듈 수를 4~8개로 늘려 실행 단계를 구체화하세요."
+  ],
+  "score": 77.9
 }

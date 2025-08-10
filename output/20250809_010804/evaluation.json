@@ -1,0 +1,14 @@
+{
+  "score": 71.8,
+  "findings": [
+    "structure=77.7",
+    "coverage=60.0",
+    "feasibility=73.0",
+    "risk=70",
+    "clarity=86.7",
+    "weights={'structure': 0.25, 'coverage': 0.25, 'feasibility': 0.25, 'risk': 0.15, 'clarity': 0.1}"
+  ],
+  "recommendations": [
+    "도메인 KPI·제약 키워드를 목표/모듈 설명에 더 반영하세요."
+  ]
+}
