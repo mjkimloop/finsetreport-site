@@ -1,41 +1,132 @@
-<!doctype html><html lang="ko"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kai 전략 리포트</title>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>핀셋리포트 | 전략 리포트</title>
+<meta name="description" content="핀셋리포트: 가입 온보딩 최적화 전략 — Kai가 생성한 전략 리포트(MVP)">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans KR','Malgun Gothic',sans-serif;line-height:1.5;margin:32px;color:#111}
-h1{font-size:24px;margin:0 0 12px}
-h2{font-size:18px;margin:22px 0 8px}
-.badge{display:inline-block;background:#e8f0ff;color:#1a56db;padding:2px 10px;border-radius:999px;margin-left:8px;font-size:12px;font-weight:700}
-.meta{color:#555;font-size:14px;margin:0 0 18px}
-.tbl{border-collapse:collapse;width:100%;margin:8px 0 16px}
-.tbl th,.tbl td{border:1px solid #ddd;padding:8px;text-align:left}
-.tbl th{background:#fafafa}
-.flow{padding:10px 12px;background:#fafafa;border:1px solid #eee;border-radius:8px}
-ul{margin:6px 0 12px 18px}
-small.muted{color:#777}
-</style></head><body>
-<h1>전략 리포트 <span class='badge'>STRATOS 77.9</span></h1>
-<div class='meta'>생성 시각(UTC): 2025-08-10T11:01:54Z · 모델: template · 버전: 1.0</div>
+:root{
+  --txt:#111; --sub:#555; --line:#e6e6e6; --bg:#fff; --badge:#e9f0ff; --badge-txt:#1752ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:"Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;line-height:1.65}
+.container{max-width:960px;margin:0 auto;padding:28px 20px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+h1{font-size:22px;margin:0}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--badge);color:var(--badge-txt);padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;letter-spacing:.3px}
+.meta{color:var(--sub);font-size:13px;margin-top:6px}
+section{margin-top:24px}
+h2{font-size:18px;margin:0 0 10px}
+p,li{font-size:15px}
+ul{margin:6px 0 6px 18px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}
+.tbl{border-collapse:collapse;width:100%;min-width:560px;background:#fff}
+.tbl th,.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}
+.tbl th{background:#fafafa;font-weight:700}
+.flow{padding:10px 12px;border:1px dashed var(--line);background:#fafafa;border-radius:8px;font-size:14px}
+.small{font-size:13px;color:var(--sub)}
+.kwrap{white-space:pre-wrap;word-break:break-word}
+hr{border:none;border-top:1px solid var(--line);margin:24px 0}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.cta a{display:inline-block;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none}
+.cta a.primary{background:#111;color:#fff}
+.cta a.ghost{border:1px solid #111;color:#111}
+footer{margin:36px 0 8px;color:#888;font-size:12px}
+@media (max-width:640px){
+  h1{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>전략 리포트</h1>
+    <span class="badge">STRATOS 77.9</span>
+  </header>
+  <div class="meta">생성 시각(UTC): 2025-08-10T11:01:54Z · 모델: template · 버전: 1.0</div>
 
-<h2>제목</h2><p>[finsetreport] 전략: 가입 온보딩 최적화 전략</p>
+  <section>
+    <h2>제목</h2>
+    <p>[finsetreport] 전략: 가입 온보딩 최적화 전략</p>
+  </section>
 
-<h2>평가 요약 (STRATOS)</h2>
-<p><b>세부 지표</b></p>
-<ul><li>structure=80.0</li><li>coverage=75.0</li><li>feasibility=80.0</li><li>risk=70</li><li>clarity=86.7</li><li>weights={'structure': 0.24797863953987184, 'coverage': 0.25148233100409395, 'feasibility': 0.2493262131799573, 'risk': 0.14878718372392313, 'clarity': 0.10242563255215381}</li></ul>
-<p><b>권장 사항</b></p><ul><li>핵심 모듈 수를 4~8개로 늘려 실행 단계를 구체화하세요.</li></ul>
+  <section>
+    <h2>평가 요약 (STRATOS)</h2>
+    <ul>
+      <li>structure=80.0</li>
+      <li>coverage=75.0</li>
+      <li>feasibility=80.0</li>
+      <li>risk=70</li>
+      <li>clarity=86.7</li>
+    </ul>
+    <div class="small kwrap"><b>weights</b>={'structure': 0.2479786, 'coverage': 0.2514823, 'feasibility': 0.2493262, 'risk': 0.1487871, 'clarity': 0.1024256}</div>
+  </section>
 
-<h2>목표 (Objectives)</h2><ul><li>핵심 목표 정의</li><li>핵심 KPI 선정</li><li>실행 로드맵 수립</li></ul>
+  <section>
+    <h2>권장 사항</h2>
+    <ul><li>핵심 모듈 수를 4~8개로 늘려 실행 단계를 구체화하세요.</li></ul>
+  </section>
 
-<h2>모듈 구성</h2>
-<table class='tbl'><thead><tr><th>모듈</th><th>역할</th><th>선행모듈</th></tr></thead>
-<tbody><tr><td>Discovery</td><td>문제/사용자 조사</td><td></td></tr><tr><td>Design</td><td>퍼널/프로세스 설계</td><td>Discovery</td></tr><tr><td>Delivery</td><td>실행/출시/관측</td><td>Design</td></tr></tbody></table>
+  <section>
+    <h2>목표 (Objectives)</h2>
+    <ul>
+      <li>핵심 목표 정의</li>
+      <li>핵심 KPI 선정</li>
+      <li>실행 로드맵 수립</li>
+    </ul>
+  </section>
 
-<h2>실행 흐름 (Flow)</h2>
-<div class='flow'>Discovery → Design → Delivery</div>
+  <section>
+    <h2>모듈 구성</h2>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th style="width:22%">모듈</th><th>역할</th><th style="width:22%">선행모듈</th></tr></thead>
+        <tbody>
+          <tr><td>Discovery</td><td>문제/사용자 조사</td><td>-</td></tr>
+          <tr><td>Design</td><td>퍼널/프로세스 설계</td><td>Discovery</td></tr>
+          <tr><td>Delivery</td><td>실행/출시/관측</td><td>Design</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-<h2>주요 리스크</h2><ul><li>데이터 부족</li><li>리소스 병목</li></ul>
+  <section>
+    <h2>실행 흐름 (Flow)</h2>
+    <div class="flow">Discovery → Design → Delivery</div>
+  </section>
 
-<h2>메타</h2>
-<ul><li>version: 1.0</li><li>model: template</li><li>timestamp: 2025-08-10T11:01:54Z</li></ul>
-<small class="muted">Generated by Kai</small>
-</body></html>
+  <section>
+    <h2>주요 리스크</h2>
+    <ul>
+      <li>데이터 부족</li>
+      <li>리소스 병목</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>바로 연락하기</h2>
+    <div class="cta">
+      <a class="primary" href="https://forms.gle/xxxxxxxx" target="_blank" rel="noopener">베타 신청</a>
+      <a class="ghost" href="mailto:finset@finsetreport.kr?subject=[문의] 핀셋리포트" rel="noopener">문의하기</a>
+    </div>
+    <p class="small" style="margin-top:6px">* 이메일/폼 주소는 운영 준비되면 교체하세요.</p>
+  </section>
+
+  <hr/>
+  <section>
+    <h2>메타</h2>
+    <ul class="small">
+      <li>version: 1.0</li>
+      <li>model: template</li>
+      <li>timestamp: 2025-08-10T11:01:54Z</li>
+    </ul>
+  </section>
+
+  <footer>Generated by Kai · © Finsetreport</footer>
+</div>
+</body>
+</html>
